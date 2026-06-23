@@ -25,7 +25,7 @@ class ConnectionConfigStore @Inject constructor(
         val PROFILE = stringPreferencesKey("profile")
     }
 
-    val config: Flow<ConnectionConfig> = context.dataStore.data.map { prefs ->
+    val configFlow: Flow<ConnectionConfig> = context.dataStore.data.map { prefs ->
         ConnectionConfig(
             mode = ConnectionMode.valueOf(prefs[Keys.MODE] ?: ConnectionMode.LOCAL.name),
             gatewayUrl = prefs[Keys.GATEWAY_URL] ?: "http://localhost:8080",
@@ -34,12 +34,8 @@ class ConnectionConfigStore @Inject constructor(
         )
     }
 
-    suspend fun save(config: ConnectionConfig) {
-        context.dataStore.edit { prefs ->
-            prefs[Keys.MODE] = config.mode.name
-            prefs[Keys.GATEWAY_URL] = config.gatewayUrl
-            prefs[Keys.API_KEY] = config.apiKey
-            prefs[Keys.PROFILE] = config.profile
-        }
-    }
+    suspend fun setMode(mode: ConnectionMode) { context.dataStore.edit { it[Keys.MODE] = mode.name } }
+    suspend fun setGatewayUrl(url: String) { context.dataStore.edit { it[Keys.GATEWAY_URL] = url } }
+    suspend fun setApiKey(key: String) { context.dataStore.edit { it[Keys.API_KEY] = key } }
+    suspend fun setProfile(profile: String) { context.dataStore.edit { it[Keys.PROFILE] = profile } }
 }
